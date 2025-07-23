@@ -39,10 +39,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = AppUser
         fields = ('id', 'username', 'email', 'role')
 
-
+class CheckEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
