@@ -31,18 +31,22 @@ from rest_framework.decorators import api_view, permission_classes
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def update_event(request, id):
+def update_event(request, pk):
     try:
-        event = Event.objects.get(pk=id)
+        event = Event.objects.get(pk=pk)
     except Event.DoesNotExist:
         return Response({'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    print("Received data:", request.data)  # 👈 Ajoute ceci pour debug
 
     serializer = EventSerializer(event, data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     else:
+        print("Serializer errors:", serializer.errors)  # 👈 Ajoute ceci
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['DELETE'])

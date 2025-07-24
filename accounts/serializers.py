@@ -21,18 +21,15 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-
     class Meta:
         model = AppUser
         fields = ('id', 'username', 'email', 'password')
-        extra_kwargs = {'username': {'required': False}}
-
+    
     def create(self, validated_data):
-        username = validated_data.get('username') or validated_data['email'].split('@')[0]
         user = AppUser.objects.create(
-            username=username,
+            username=validated_data['username'],
             email=validated_data['email'],
-            role='attender'
+            role='attender' 
         )
         user.set_password(validated_data['password'])
         user.save()
@@ -44,5 +41,4 @@ class UserSerializer(serializers.ModelSerializer):
         model = AppUser
         fields = ('id', 'username', 'email', 'role')
 
-class CheckEmailSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+
