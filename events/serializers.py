@@ -27,3 +27,14 @@ class EventSerializer(serializers.ModelSerializer):
         combined_datetime = datetime.combine(event_date, event_time)
         validated_data['date'] = combined_datetime
         return super().create(validated_data)
+    
+from rest_framework import serializers
+from .models import Reservation
+
+class ReservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reservation
+        fields = '__all__'
+        read_only_fields = ['receipt_number', 'user']
+
+

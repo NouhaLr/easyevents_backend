@@ -63,3 +63,45 @@ def delete_event(request, pk):
     event.delete()
     return Response({'detail': 'Event deleted successfully'}, status=204)
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Reservation
+from .serializers import ReservationSerializer
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_reservation(request):
+    user = request.user
+    data = request.data
+    data['user'] = user.id
+
+    if Reservation.objects.filter(user=user, event=data['event']).exists():
+        return Response({'detail': 'You have already reserved for this event.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = ReservationSerializer(data=data)
+    if serializer.is_valid():
+        reservation = serializer.save(user=user)
+
+        event_id = reservation.event.id
+        count = Reservation.objects.filter(event=reservation.event).count()
+        reservation.receipt_number = f"RECEIPT-{event_id}-{count:04d}"
+        reservation.save()
+
+        return Response(ReservationSerializer(reservation).data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_reservation(request, event_id):
+    try:
+        reservation = Reservation.objects.get(user=request.user, event__id=event_id)
+        serializer = ReservationSerializer(reservation)
+        return Response(serializer.data)
+    except Reservation.DoesNotExist:
+        return Response({'reserved': False})
+
+
