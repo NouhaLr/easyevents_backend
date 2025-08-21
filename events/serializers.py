@@ -17,7 +17,8 @@ class EventSerializer(serializers.ModelSerializer):
             'id', 'name', 'place', 'description', 'image', 'plan',
             'normal_ticket_price', 'vip_ticket_price', 'created_at',
             'event_date', 'event_time',  # Input fields
-            'date'  # Final combined datetime
+            'date',  # Final combined datetime
+            'max_attendees' 
         ]
         read_only_fields = ['date', 'created_at']
 

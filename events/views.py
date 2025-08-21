@@ -70,6 +70,7 @@ from rest_framework import status
 from .models import Reservation
 from .serializers import ReservationSerializer
 
+# views.py
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_reservation(request):
@@ -77,8 +78,17 @@ def create_reservation(request):
     data = request.data
     data['user'] = user.id
 
-    if Reservation.objects.filter(user=user, event=data['event']).exists():
-        return Response({'detail': 'You have already reserved for this event.'}, status=status.HTTP_400_BAD_REQUEST)
+    ticket_prices = {
+        'normal': 20,  # example price
+        'vip': 50
+    }
+    
+    quantity = int(data.get('quantity', 1))
+    ticket_type = data.get('ticket_type', 'normal')
+    price_per_ticket = ticket_prices.get(ticket_type, 0)
+    total_price = price_per_ticket * quantity
+
+    data['total_price'] = total_price
 
     serializer = ReservationSerializer(data=data)
     if serializer.is_valid():

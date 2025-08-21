@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'events',
     'wallet',
+    'rfid',
 ]
 
 MIDDLEWARE = [

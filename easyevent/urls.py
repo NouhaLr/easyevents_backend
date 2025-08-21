@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/', include('accounts.urls')),
     path('events/', include('events.urls')),
     path('', include('wallet.urls')),
+    path('rfid/', include('rfid.urls')),
 ]
 
 if settings.DEBUG:
